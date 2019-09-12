@@ -12,8 +12,7 @@ redirect_from:
 Education
 ======
 * B.S. in Electrical Engineering, Boston University, 2016
-* M.S. in Embedded Systems Engineering, University of Pennsylvania, 2021
-* Ph.D in Version Control Theory, GitHub University, 2018 (expected)
+* M.S. in Embedded Systems Engineering, University of Pennsylvania, 2021 (Expected)
 
 Work experience
 ======
