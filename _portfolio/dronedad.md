@@ -1,6 +1,6 @@
 ---
 title: "DroneDAD"
-excerpt: "An IoT device for aquriring accelerometer data from a drone and reporting the data to a server over WIFI.<br/><img src='../images/dronedad/header.jpg'>"
+excerpt: "An IoT device for aquriring accelerometer data from a drone and reporting the data to a server over WIFI.<br/><img src='/images/dronedad/header.jpg'>"
 collection: portfolio
 ---
 
@@ -18,7 +18,7 @@ Built With: Altium, Atmel Studio, Node-RED, IBM Cloud.
 [Github Link](https://github.com/jmarcao/DroneDAD)
 
 <p align="center">
-  <img src="../images/dronedad/closeup.jpg">
+  <img src="/images/dronedad/closeup.jpg">
 </p>
 
 # Inspiration
@@ -38,9 +38,9 @@ We used an accelerometer (MPU 9150) and SMD RGB LED actuators coupled with LED d
 Our Bootloader works by first reading a boot_status struct located on the NVM storage. This struct contains a flag saying if a firmware update was scheduled for the application. If the flag is set, then the bootloader will look at the install_index value in the boot_status. This value is then used to find the correct firmware version on the flash chip. The flash chip has a flash header where it stores the addresses of each FW version. The bootloader will read this struct and then go to the address corresponding to the install_index value. The bootloader then reads the firmware metadata struct from the flash memory. It then does a CRC check on the data in flash to confirm that it has not been altered. If that is successful, it will write the data to the NVM storage, again checking the CRC as it writes. When the write is complete, we do one last CRC check on the data on the NVM drive to confirm that we wrote it correctly. If everything is good, we reset the boot_status flag and restart. If the CRC fails, then the bootloader will not write to the NVM chip and will mark the FW update flag as false in the boot_status. The system will then reboot into the old firmware version. We include several CRC checks to ensure data integrity on the system.
 
 <p align="center">
-  <img src="../images/dronedad/bootloader.jpg">
+  <img src="/images/dronedad/bootloader.jpg">
   <br/>
-  <img src="../images/dronedad/memtable.jpg">
+  <img src="/images/dronedad/memtable.jpg">
 </p>
 
 # Cloud Connection
@@ -76,4 +76,3 @@ We are really proud of the final PCB design and the way our board has finally co
 
 # What's next for DroneDAD
 Better accelerometer, careful schematics, more debugging points, more LEDs and a promise to keep it looking as cool as it does!
-
