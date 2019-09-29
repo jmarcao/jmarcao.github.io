@@ -5,7 +5,7 @@ date: 2019-9-29
 collection: portfolio
 ---
 
-![](img/material_comp.png)
+![](images/pathtracer/material_comp.png)
 
 [Github Link](https://github.com/jmarcao/CUDA-Path-Tracer)
 
@@ -63,31 +63,31 @@ In the following sections I'll discuss each objects implementation and its effec
 # Ideal Diffuse Scattering Function
 This was mostly a freebie so I will not go into it in too much detail. When a ray intersects a non-specular object, it will bounce the incoming ray in a random direction in a hemisphere about the normal. This is done by taking a random &theta; and &psi; around the normal and mapping it to cartesian coordinates.
 
-![](img/diffuse_annot.png)
+![](images/pathtracer/diffuse_annot.png)
 
 <a name="refl"></a>
 # Imperfect Specular Reflective Scattering Function
 Reflective materials have a 'shininess' property that changes how reflective they are. A mirror, for example, is nearly perfectly reflective. A chrome bumper on a car may be less reflective, and a small marbles even less so. This is represented in the pathtracer by using importance sampling. A perfectly reflective object (shininess &rarr; &infin;) will always bounce a ray at &theta;<sub>i</sub> = &theta;<sub>o</sub>. However, for smaller shininess values, the ray will bounce in some distribution centered on the perfectly reflected ray. My renderer determines this by taking n = shininess, R = &Uscr;[0,1), and &psi;<sub>o</sub> = acos(R<sup>1 / n + 1</sup>) and &theta;<sub>o</sub> = 2&pi;R. I then take these values, transform them to the proper coordinates, and then transform it to be centered on the normal. Observe that for infinite n, &psi;<sub>o</sub> will be 0<sup>o</sup>, so there would be no change from the perfectly reflected angle.
 
-![](img/refl_annot.png)
+![](images/pathtracer/refl_annot.png)
 
 <a name="refrac"></a>
 # Refractive Transmission Scattering Function
 Refraction is a bit trickier from the above two because of a couple of unique properties. First of all, there is the case of total internal reflection. After a certain critical angle &theta;<sub>c</sub>, the ray will not transmit through the material and it will simply reflect off of the surface (internal or external). This can be seen in the real world by looking out on the ocean during a sunset. Light from the sun will mostly bounce off the surface of the water to your eyes. High indices of refraction &eta; will lead to greater distortion of the rays moving through the medium.
 
-![](img/refract_annot.png)
+![](images/pathtracer/refract_annot.png)
 
 <a name="fe"></a>
 # Fresnel Effect
 Additionally, we must take Fresnel Effects into consideration. On a reflective/refractive surface, fresnel effects will cause reflections to appear stronger at narrower &theta; and weaker at wider &theta;. I use Shlick's Approximation to produce a good-enough estimation on when a ray will reflect back and when it will transmit through. Note this is a different check than the critical angle.
 
-![](img/fres_annot.png)
+![](images/pathtracer/fres_annot.png)
 
 <a name="aa"></a>
 # Antialiasing
 Because the camera generates sample points in a regular pattern, rays will always strike the center of each pixel on the first bounce. This can lead to jagged edges on objects since the pixel is not entirely one color, but the point sampled is just one color. I implement anti-aliasing by applying a &PlusMinus;0.5f jitter to each ray when it is generated at the camera. This will allow our samples to randomly hit a position in the first pixel, and then these random points are samples over many iterations to produce an average of the colors in that pixel. This random sampling to produce a better average is known as stochastic sampling.
 
-![](img/aa_comp.png)
+![](images/pathtracer/aa_comp.png)
 
 <a name="dof"></a>
 # Depth of Field
@@ -95,23 +95,23 @@ In the base pathtracer, the camera is treated as a pinhole-camera. That is, all 
 
 | &fpartint; = 5, r = 0.01 | &fpartint; = 15, r = 0.01
 | --- | --- |
-| ![](img/dof/r0.1_f5.png) | ![](img/dof/r0.1_f15.png) |
+| ![](images/pathtracer/dof/r0.1_f5.png) | ![](images/pathtracer/dof/r0.1_f15.png) |
 
 | &fpartint; = 5, r = 0.05 | &fpartint; = 15, r = 0.5
 | --- | --- |
-| ![](img/dof/r0.5_f5.png) | ![](img/dof/r0.5_f15.png) |
+| ![](images/pathtracer/dof/r0.5_f5.png) | ![](images/pathtracer/dof/r0.5_f15.png) |
 
 <a name="mb"></a>
 # Motion Blur
 A normal camera has a shutter open and a shutter close time. The final image from the camera naturally integrates over that time frame, but my renderer does not take time into account. If an object was moving in the scene, the movement would not be perceptible. I added a motion blur feature to account for this. Each object can be defined with a velocity vector in the scene description file. Each ray is then assigned a random point in time from 0 to 1. When intersections are tested, the render transforms each object by adding the displacement caused by the object velocity at that point in time.  This creates a nice blurring effect, amplified by the velocity of the object.
 
-![](img/mb_annot.png)
+![](images/pathtracer/mb_annot.png)
 
 <a name="gltf"></a>
 # glTF Objects
 I implemented the tools needed to load glTF files and convert them into the objects used by my renderer. However, I stopped short at implementing just the physical geometries of the object and not the textures. My renderer also has lots of trouble with any complicated geometry, likely due to my intersection test having no current methods of culling objects. Overall it allows for some uninteresting objects to load. Future work would include loading textures and adding performance optimizations to allow for more interesting objects to be loaded.
 
-![](img/milk.png)
+![](images/pathtracer/milk.png)
 
 <a name="comc"></a>
 # Compaction of Terminated Rays
@@ -129,7 +129,7 @@ To improve kernel performance, I sort the arrays used for intersections by the m
 # Performance Comparison
 Combining the above three optimizations, I generated a scene of 2000 random spheres bounded in a room. I also calculated 200 unique materials randomly distributed between the spheres. I then ran each 5 scenarios under different configurations to collect my data, measuring the elapsed milliseconds for each iteration of the CUDA renderer. The chart below contains average values for each iteration across 200 samples. I excluded the first iteration of the Pathtracer to show the advantage of the First-Bounce caching optimization.
 
-![](img/iteration_duration_chart.png)
+![](images/pathtracer/iteration_duration_chart.png)
 
 Running with no optimizations provides a solid baseline to the Pathtracer. The first iteration takes significantly longer to calculate for all modes due to every ray being shaded. Many rays will fall off the scene and terminate after the first iteration. If we look at the material sort data, the performance is actually <i>worse</i>. Compared to the base Pathtracer, the Material Sort has a 14% decrease in performance. The goal of material sorting is to keep similar materials close in memory to improve cache coherency and reduce high-cost memory calls to global memory. However, with 200 materials, the cost of sorting the materials buffer is significant (16ms added). If we factor our the additional 16ms per depth in the material sort optimization, the result is about equal to having no optimizations. Rerunning the test with only two materials showed no improvement to the algorithm. This tells me that the cost of reading material data is insignificant compared to the costs of computing the shader. As we'll also see in the All optimization, the Material Sort optimization only serves to add 14-16ms per loop to the pathtracer.
 
@@ -163,12 +163,12 @@ The First-Bounce cache optimization similarly adds a huge benefit by not having 
 
 It is also interesting to see the performance difference between the optimized and unoptimized pathtracer with different scene complexities. I ran both optimized and unoptimized pathtracers through 3 scenes: 20 objects, 200 objects, and 2000 objects. The unoptimized pathtracer did significantly better in simple cases, but as the number of objects went up, the better the optimized pathtracer performed. There is a spike in duration for the optimized pathtracer in the second depth. This was measured and attributed to the extra work done to perform stream compaction on the second set of rays. After this initial spike the performance improves greatly. <b>In the most complex scene, the unoptimized pathtracer takes 916ms per iteration, while the optimized pathtracer needs only 426ms.</b>
 
-![](img/scene_complexity.png)
+![](images/pathtracer/scene_complexity.png)
 
 Lastly, I ran a comparison with a 200-Object scene with bounding walls and a scene with no walls. As was expected, the scene with no walls performed much better. This is due to the huge number pf rays that become irrelevant after even the first iteration. As can be seen in the charts below, the scene with no bounding walls loses 76% of its rays after the first bounce, while the bounded scene only loses 22% of its rays. <b>By the end of the iteration, the bounded scene still has 44% of its rays, while the unbounded scene has 0.3%.</b>
 
-![](img/walls_time.png)
-![](img/walls_rays.png)
+![](images/pathtracer/walls_time.png)
+![](images/pathtracer/walls_rays.png)
 
 <a name="blp"></a>
 # Bloopers
@@ -177,15 +177,15 @@ Lets laugh with me, not at me.
 
 Sometimes you're driving your milk truck and you just start to disassociate from the mortal plane.
 
-![](img/bad_milk.png)
+![](images/pathtracer/bad_milk.png)
 
 While working on the DOF, I was not transforming the right coordinates and the pathtracer decided to knock my camera to the ground.
 
-![](img/I_threw_it_on_the_ground.png)
+![](images/pathtracer/I_threw_it_on_the_ground.png)
 
 And lastly, the most frustrating bug. When calculating the new origin after a ray intersects another object, it is useful to bump the origin away from the actual intersection. This is done to tell the pathtracer that the ray has truly left the intersection. If the origin is not offset enough, the ray will bounce in an object for eternity. That is what was happening when I tried to calculate refraction. I ended up with some cool, cloudy balls, but it was, overall, a big use of my time.
 
-![](img/frust.png)
+![](images/pathtracer/frust.png)
 
 <a name="ack"></a>
 # Acknowledgements
