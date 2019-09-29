@@ -1,6 +1,7 @@
 ---
 title: "DroneDAD"
 excerpt: "An IoT device for aquriring accelerometer data from a drone and reporting the data to a server over WIFI.<br/><img src='/images/dronedad/header.jpg'>"
+date: 2019-09-01
 collection: portfolio
 ---
 

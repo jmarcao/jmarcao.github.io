@@ -1,10 +1,13 @@
 ---
 title: "CUDA Pathtracer"
 excerpt: "A Pathtracer developed using CUDA, Thrust, and OpenGL libraries. <br/><img src='/images/pathtracer/header.png'>"
+date: 2019-9-29
 collection: portfolio
 ---
 
 ![](img/material_comp.png)
+
+[Github Link](https://github.com/jmarcao/CUDA-Path-Tracer)
 
 # Contents
 * [Introduction to Pathtracing](#intro)
