@@ -1,0 +1,512 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>DroneDAD - John Marcao</title>
+<meta name="description" content="An IoT device for aquriring accelerometer data from a drone and reporting the data to a server over WIFI.">
+
+
+  <meta name="author" content="John Marcao">
+  
+  <meta property="article:author" content="John Marcao">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="John Marcao">
+<meta property="og:title" content="DroneDAD">
+<meta property="og:url" content="http://localhost:4000/projects/dronedad/">
+
+
+  <meta property="og:description" content="An IoT device for aquriring accelerometer data from a drone and reporting the data to a server over WIFI.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2019-09-01T00:00:00-05:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/projects/dronedad/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="John Marcao Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          John Marcao
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/">Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+    <div class="author__avatar">
+      <a href="http://localhost:4000/">
+        <img src="/assets/images/bio-photo.jpg" alt="John Marcao" itemprop="image" class="u-photo">
+      </a>
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">John Marcao</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <p>Software Engineer, Nature Lover, Math Enthusiast</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://github.com/jmarcao" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="DroneDAD">
+    <meta itemprop="description" content="An IoT device for aquriring accelerometer data from a drone and reporting the data to a server over WIFI.">
+    <meta itemprop="datePublished" content="2019-09-01T00:00:00-05:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/projects/dronedad/" class="u-url" itemprop="url">DroneDAD
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          4 minute read
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <p>DroneDAD is an IoT device designed from the ground up for ESE516 IoT Edge Computing at University of Pennsylvania. I worked with my partner <a href="https://github.com/riddhindoshi">Riddhi Doshi</a> to go through the entire development lifecylce of the device.</p>
+<ul>
+  <li>Requirements and Design</li>
+  <li>Component Selection</li>
+  <li>Schematic Design and PCB Layout</li>
+  <li>Manufacturing</li>
+  <li>Testing</li>
+  <li>LOTS of Testing</li>
+  <li>Bootloader, Application, and Server Development</li>
+</ul>
+
+<p>Built With: Altium, Atmel Studio, Node-RED, IBM Cloud.</p>
+
+<p><a href="https://github.com/jmarcao/DroneDAD">Github Link</a></p>
+
+<p align="center">
+  <img src="/assets/images/dronedad/closeup.jpg" />
+</p>
+
+<h1 id="inspiration">Inspiration</h1>
+
+<p>The inspiration to build this device was to provide a simple PCB for the drones (mainly fixed-wing aircraft) that do not require a full-fledged data acquisition system at all points. It would measure the angle of attack of the aircraft and give effective stall warnings in real-time using the LEDs on board. This would specifically help the stunt pilots to push the aircraft to its limits and perform better.</p>
+
+<h1 id="what-it-does">What it does</h1>
+
+<p>Using an accelerometer and gyroscope, our device will calculate the angle of the drone it is mounted on and it will light up LEDs accordingly. It will also send this data to a web-service to provide flight data to a server and also give stall warning on the server. It is also capable of giving roll v/s time data. All the data is filtered while on the main dashboard, however, the raw accelerometer data can be viewed too on another tab.</p>
+
+<h1 id="sensors-and-actuators-used">Sensors and Actuators used</h1>
+
+<p>We used an accelerometer (MPU 9150) and SMD RGB LED actuators coupled with LED driver (LP3944ISQ/NOPB). These components were selected to fit within our budget while also providing the the necesary functions.</p>
+
+<h1 id="bootloader-implementation">Bootloader Implementation</h1>
+
+<p>Our Bootloader works by first reading a boot_status struct located on the NVM storage. This struct contains a flag saying if a firmware update was scheduled for the application. If the flag is set, then the bootloader will look at the install_index value in the boot_status. This value is then used to find the correct firmware version on the flash chip. The flash chip has a flash header where it stores the addresses of each FW version. The bootloader will read this struct and then go to the address corresponding to the install_index value. The bootloader then reads the firmware metadata struct from the flash memory. It then does a CRC check on the data in flash to confirm that it has not been altered. If that is successful, it will write the data to the NVM storage, again checking the CRC as it writes. When the write is complete, we do one last CRC check on the data on the NVM drive to confirm that we wrote it correctly. If everything is good, we reset the boot_status flag and restart. If the CRC fails, then the bootloader will not write to the NVM chip and will mark the FW update flag as false in the boot_status. The system will then reboot into the old firmware version. We include several CRC checks to ensure data integrity on the system.</p>
+
+<p align="center">
+  <img src="/assets/images/dronedad/bootloader.jpg" />
+  <br />
+  <img src="/assets/images/dronedad/memtable.jpg" />
+</p>
+
+<h1 id="cloud-connection">Cloud Connection</h1>
+<h3 id="data-sent-to-cloud">Data Sent to Cloud</h3>
+<ul>
+  <li>Accelerometer Data: The device sends raw accelerometer data over three axes and the roll and pitch data in real time over the cloud. A different plot for each is displayed on the dashboard.</li>
+  <li>The flight status(safe mode/critical mode/stalled mode) data is also sent to the cloud to display on the dashboard.</li>
+</ul>
+
+<h3 id="data-received-from-the-cloud">Data Received from the Cloud</h3>
+<ul>
+  <li>Every Aircraft could have a different stall angle. We set up the dashboard to send the required stall angle to the device.</li>
+</ul>
+
+<h1 id="challenges">Challenges</h1>
+<p>As with every new thing did the first time, not everything that we thought of was achieved smoothly.</p>
+
+<h3 id="flipped-sda--scl-lines">Flipped SDA &amp; SCL lines</h3>
+<p>We realized that we had flipped the SDA and SCL I2C connection on our SAM W25 chip. We ended up doing that on our backup I2C as well as original I2C connections.
+Solution: Scratch the bad traces and wire the swap!!</p>
+
+<h3 id="poor-accelerometer-selection">Poor Accelerometer Selection</h3>
+<p>We realized that the accelerometer we prototyped our design with (because of the unavailability of the chosen accelerometer) performed better and is more sensitive than the onboard accelerometer. Apparently, this particular accelerometer was better suited for other purposes like the phone.
+Solution: We removed the on-board accelerometer and used another external accelerometer.</p>
+
+<h3 id="led-driver-out-of-stock">LED Driver Out of Stock</h3>
+<p>On the week of submission to PCB manufacturer, the original LED Driver was out of stock. The lead time for additional parts was too great to meet our deadline.
+Solution: We had to look for a part with the same pin mapping. We found an alternative, but it could drive only 2 colours in the RGB LED.</p>
+
+<h3 id="led-footprint-flipped">LED Footprint Flipped</h3>
+<p>Since we ended up making the footprint ourselves for this LED, somehow we messed it up at some point and we mirrored it.
+Solution: We whitewired the circuit and make one colour work and rely on different patterns of the blinking to give different level of warnings.</p>
+
+<h1 id="accomplishments">Accomplishments</h1>
+<p>We are really proud of the final PCB design and the way our board has finally come up. It was a thrilling challenge to work with such high packing density on the first board and finally, not having errors that can’t be solved at all without redesigning the complete board.</p>
+
+<h1 id="whats-next-for-dronedad">What’s next for DroneDAD</h1>
+<p>Better accelerometer, careful schematics, more debugging points, more LEDs and a promise to keep it looking as cool as it does!</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#projects" class="page__taxonomy-item p-category" rel="tag">Projects</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2019-09-01T00:00:00-05:00">September 1, 2019</time></p>
+
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=DroneDAD%20http%3A%2F%2Flocalhost%3A4000%2Fprojects%2Fdronedad%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fprojects%2Fdronedad%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fprojects%2Fdronedad%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="#" class="pagination--pager disabled">Previous</a>
+    
+    
+      <a href="/projects/cuda-pathtracer/" class="pagination--pager" title="CUDA Pathtracer
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h2 class="page__related-title">You May Also Enjoy</h2>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/projects/cuda-pathtracer/" rel="permalink">CUDA Pathtracer
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          13 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">A Pathtracer developed using CUDA, Thrust, and OpenGL libraries. 
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 John Marcao. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

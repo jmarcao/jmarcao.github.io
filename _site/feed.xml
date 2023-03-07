@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-03-06T21:08:08-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">John Marcao</title><subtitle>Personal site. Musings, projects, ideas, and anything else to I have to say.</subtitle><author><name>John Marcao</name></author><entry><title type="html">CUDA Pathtracer</title><link href="http://localhost:4000/projects/cuda-pathtracer/" rel="alternate" type="text/html" title="CUDA Pathtracer" /><published>2019-09-29T00:00:00-05:00</published><updated>2019-09-29T00:00:00-05:00</updated><id>http://localhost:4000/projects/cuda-pathtracer</id><content type="html" xml:base="http://localhost:4000/projects/cuda-pathtracer/">&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/material_comp.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/jmarcao/CUDA-Path-Tracer&quot;&gt;Github Link&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;contents&quot;&gt;Contents&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#intro&quot;&gt;Introduction to Pathtracing&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#impl&quot;&gt;Pathtracer Implementation&lt;/a&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Visual Effects
+        &lt;ul&gt;
+          &lt;li&gt;&lt;a href=&quot;#diff&quot;&gt;Ideal Diffuse Scattering Function&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#refl&quot;&gt;Imperfect Specular Reflective Scattering Function&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#refrac&quot;&gt;Refractive Transmission Scattering Function&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#fe&quot;&gt;Fresnel Effect&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#aa&quot;&gt;Antialiasing&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#dof&quot;&gt;Depth of Field&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#mb&quot;&gt;Motion Blur&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#gltf&quot;&gt;glTF Objects&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;Performance Improvements
+        &lt;ul&gt;
+          &lt;li&gt;&lt;a href=&quot;#comc&quot;&gt;Compaction of Terminated Rays&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#fbc&quot;&gt;First-Bounce Caching&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#ms&quot;&gt;Material Sorting&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href=&quot;#pcomp&quot;&gt;Performance Comparison&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#blp&quot;&gt;Bloopers&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#ack&quot;&gt;Acknowledgements&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;a name=&quot;intro&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;introduction-to-pathtracing&quot;&gt;Introduction to Pathtracing&lt;/h1&gt;
+&lt;p&gt;Starting this project, I had minimal knowledge of pathtracing. All I knew is that it was somewhat related to raytracing and I knew it was a Big Deal for games. If you’re familiar with pathtracing/raytracing, feel free to skip ahead to my project details. Otherwise I’ll talk a bit about pathtracing and how it works in general.&lt;/p&gt;
+
+&lt;p&gt;Rendering is hard. There are a lot of materials in the world. Creating a realistic representation through traditional rendering can be tedious and, in the end, doesn’t look that great. PPathtracing provides a more realistic rendered image by simulating the laws of physics. Simply, a number of rays are generated on a point representing our camera. Each ray is then sent out in in each direction from the point. For each ray, the pathtracer calculates where it will intersect from its current position and direction and then calculates where its going next. This is done with the help of our shaders. The shaders determine not only the color of the bounced ray, but in what direction it is going. This is where the physical properties of the material come into play.&lt;/p&gt;
+
+&lt;p&gt;Each object in the scene can be Reflective, Refractive, Diffuse, or proportion of the three. The ratios and properties of each material are used when rendering to more accurately simulate the light-material interactions we would see in the real world. When light interacts with a diffuse object (think chalkboard) it can bounce in any direction. This creates a rough, plain looking surface. Reflective materials (think a mirror or a chrome fender) bounce rays in a generally consistent direction. Perfectly reflective materials are more likely to bounce it in a particular direction, while less reflective materials will have a bit more divergence. Refractive materials (think water) will allow most light to pass through, but the path of the light will change. I talk more about the physics of each further down.&lt;/p&gt;
+
+&lt;p&gt;The pathtracer looks at each intersection between a ray and a material and picks one of the properties to apply, and if enough rays are used enough times, this averages out to look pretty realistic. The pathtracer will generate rays from a camera, bounce them around the scene a couple times, and then repeat this process. Over many samples, the image starts to converge and look good. There are some problems with sampling this way, but as we’ll see in a bit the pathtracer can add noise to each sample to create small differences in the initial rays for each sample. This creates a smoother image and tries to hide some of the imperfections of digital rendering.&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;impl&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;pathtracer-implementation&quot;&gt;Pathtracer Implementation&lt;/h1&gt;
+&lt;p&gt;The base pathtracer given to me had functions to read in scene descriptions, fire off rays, and do minimal shading. I implemented additional shaders and features to improve the quality and capabilities of the renderer. I’ve split this into two groups, visual improvements and performance improvements.&lt;/p&gt;
+
+&lt;h3 id=&quot;visual-improvements&quot;&gt;Visual Improvements&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Ideal Diffuse Scattering Function&lt;/li&gt;
+  &lt;li&gt;Imperfect Specular Reflective Scattering Function&lt;/li&gt;
+  &lt;li&gt;Refractive Transmission Scattering Function using Fresnel Effects and Shlick’s Approximation&lt;/li&gt;
+  &lt;li&gt;Antialiasing with Stochastic Sampling&lt;/li&gt;
+  &lt;li&gt;Depth of Field&lt;/li&gt;
+  &lt;li&gt;Motion Blur Effects&lt;/li&gt;
+  &lt;li&gt;Loading of glTF Object Files (Partial)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;performance-improvements&quot;&gt;Performance Improvements&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Compaction of Terminated Rays&lt;/li&gt;
+  &lt;li&gt;First-Bounce Caching&lt;/li&gt;
+  &lt;li&gt;Material Sorting for Memory coherence&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In the following sections I’ll discuss each objects implementation and its effects.&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;diff&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;ideal-diffuse-scattering-function&quot;&gt;Ideal Diffuse Scattering Function&lt;/h1&gt;
+&lt;p&gt;This was mostly a freebie so I will not go into it in too much detail. When a ray intersects a non-specular object, it will bounce the incoming ray in a random direction in a hemisphere about the normal. This is done by taking a random θ and ψ around the normal and mapping it to cartesian coordinates.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/diffuse_annot.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;refl&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;imperfect-specular-reflective-scattering-function&quot;&gt;Imperfect Specular Reflective Scattering Function&lt;/h1&gt;
+&lt;p&gt;Reflective materials have a ‘shininess’ property that changes how reflective they are. A mirror, for example, is nearly perfectly reflective. A chrome bumper on a car may be less reflective, and a small marbles even less so. This is represented in the pathtracer by using importance sampling. A perfectly reflective object (shininess → ∞) will always bounce a ray at θ&lt;sub&gt;i&lt;/sub&gt; = θ&lt;sub&gt;o&lt;/sub&gt;. However, for smaller shininess values, the ray will bounce in some distribution centered on the perfectly reflected ray. My renderer determines this by taking n = shininess, R = &amp;amp;Uscr;[0,1), and ψ&lt;sub&gt;o&lt;/sub&gt; = acos(R&lt;sup&gt;1 / n + 1&lt;/sup&gt;) and θ&lt;sub&gt;o&lt;/sub&gt; = 2πR. I then take these values, transform them to the proper coordinates, and then transform it to be centered on the normal. Observe that for infinite n, ψ&lt;sub&gt;o&lt;/sub&gt; will be 0&lt;sup&gt;o&lt;/sup&gt;, so there would be no change from the perfectly reflected angle.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/refl_annot.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;refrac&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;refractive-transmission-scattering-function&quot;&gt;Refractive Transmission Scattering Function&lt;/h1&gt;
+&lt;p&gt;Refraction is a bit trickier from the above two because of a couple of unique properties. First of all, there is the case of total internal reflection. After a certain critical angle θ&lt;sub&gt;c&lt;/sub&gt;, the ray will not transmit through the material and it will simply reflect off of the surface (internal or external). This can be seen in the real world by looking out on the ocean during a sunset. Light from the sun will mostly bounce off the surface of the water to your eyes. High indices of refraction η will lead to greater distortion of the rays moving through the medium.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/refract_annot.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;fe&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;fresnel-effect&quot;&gt;Fresnel Effect&lt;/h1&gt;
+&lt;p&gt;Additionally, we must take Fresnel Effects into consideration. On a reflective/refractive surface, fresnel effects will cause reflections to appear stronger at narrower θ and weaker at wider θ. I use Shlick’s Approximation to produce a good-enough estimation on when a ray will reflect back and when it will transmit through. Note this is a different check than the critical angle.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/fres_annot.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;aa&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;antialiasing&quot;&gt;Antialiasing&lt;/h1&gt;
+&lt;p&gt;Because the camera generates sample points in a regular pattern, rays will always strike the center of each pixel on the first bounce. This can lead to jagged edges on objects since the pixel is not entirely one color, but the point sampled is just one color. I implement anti-aliasing by applying a &amp;amp;PlusMinus;0.5f jitter to each ray when it is generated at the camera. This will allow our samples to randomly hit a position in the first pixel, and then these random points are samples over many iterations to produce an average of the colors in that pixel. This random sampling to produce a better average is known as stochastic sampling.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/aa_comp.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;dof&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;depth-of-field&quot;&gt;Depth of Field&lt;/h1&gt;
+&lt;p&gt;In the base pathtracer, the camera is treated as a pinhole-camera. That is, all the rays begin at the same point, minus some small jitter from the Antialiasing if enabled. In a real world camera, there is a lens and a focal distance included. I simulate this in my pathtracer by projecting each sample onto a small concentric disk with lens radius r a focal distance &amp;amp;fpartint; from the camera. This creates a depth-of-filed effect that can be controlled by modifying the two variables. Increasing the lens radius increases the blurring effect seen as objects move out of focus. Increasing the focal distance moves the focal plane back, increasing the depth of focus.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;&amp;amp;fpartint; = 5, r = 0.01&lt;/th&gt;
+      &lt;th&gt;&amp;amp;fpartint; = 15, r = 0.01&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;img src=&quot;/assets/images/pathtracer/dof/r0.1_f5.png&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;img src=&quot;/assets/images/pathtracer/dof/r0.1_f15.png&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;&amp;amp;fpartint; = 5, r = 0.05&lt;/th&gt;
+      &lt;th&gt;&amp;amp;fpartint; = 15, r = 0.5&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;img src=&quot;/assets/images/pathtracer/dof/r0.5_f5.png&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;img src=&quot;/assets/images/pathtracer/dof/r0.5_f15.png&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;a name=&quot;mb&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;motion-blur&quot;&gt;Motion Blur&lt;/h1&gt;
+&lt;p&gt;A normal camera has a shutter open and a shutter close time. The final image from the camera naturally integrates over that time frame, but my renderer does not take time into account. If an object was moving in the scene, the movement would not be perceptible. I added a motion blur feature to account for this. Each object can be defined with a velocity vector in the scene description file. Each ray is then assigned a random point in time from 0 to 1. When intersections are tested, the render transforms each object by adding the displacement caused by the object velocity at that point in time.  This creates a nice blurring effect, amplified by the velocity of the object.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/mb_annot.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;gltf&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;gltf-objects&quot;&gt;glTF Objects&lt;/h1&gt;
+&lt;p&gt;I implemented the tools needed to load glTF files and convert them into the objects used by my renderer. However, I stopped short at implementing just the physical geometries of the object and not the textures. My renderer also has lots of trouble with any complicated geometry, likely due to my intersection test having no current methods of culling objects. Overall it allows for some uninteresting objects to load. Future work would include loading textures and adding performance optimizations to allow for more interesting objects to be loaded.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/milk.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;comc&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;compaction-of-terminated-rays&quot;&gt;Compaction of Terminated Rays&lt;/h1&gt;
+&lt;p&gt;The pathtracer will fire off one ray per pixel at first, but many of those rays will terminate by falling off the scene or hitting a light source. Computing on these rays is wasteful and would lead to wasted threads in our warps and blocks. After each shading step, the device data containing all arrays is partitioned into an alive side and a terminated side. The ray buffer length is then adjusted so subsequent kernels will only operate on the living rays. This reduces the number of wasted threads per loop.&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;fbc&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;first-bounce-caching&quot;&gt;First-Bounce Caching&lt;/h1&gt;
+&lt;p&gt;The camera generates rays in every direction on the first iteration, and many rays terminate after the first iteration. This leads to a very expensive first iteration normally. To help reduce the cost of this first iteration, the first set of bounces and shaders are cached by the renderer so that subsequent samples can reuse the cached first iteration data. This does not help when antialiasing is used since each first iteration is jittered randomly. Therefore, when antialiasing is enabled, the first iteration cache is disabled.&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;ms&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;material-sorting&quot;&gt;Material Sorting&lt;/h1&gt;
+&lt;p&gt;To improve kernel performance, I sort the arrays used for intersections by the material ID. This helps by reducing the largest divergence split in the shaders. When the shader starts, it looks at the properties of the material and then choses a distribution function based on that. If a diffuse material, reflective material, and refractive material are all in the same warp, this leads to horrendous performance. Each kernel will diverge in the early stages of the shader and each will have to perform serially. By grouping materials together, divergence is limited to instances where the angle of incidence causes some unique behavior in each kernel.&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;pcomp&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;performance-comparison&quot;&gt;Performance Comparison&lt;/h1&gt;
+&lt;p&gt;Combining the above three optimizations, I generated a scene of 2000 random spheres bounded in a room. I also calculated 200 unique materials randomly distributed between the spheres. I then ran each 5 scenarios under different configurations to collect my data, measuring the elapsed milliseconds for each iteration of the CUDA renderer. The chart below contains average values for each iteration across 200 samples. I excluded the first iteration of the Pathtracer to show the advantage of the First-Bounce caching optimization.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/iteration_duration_chart.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Running with no optimizations provides a solid baseline to the Pathtracer. The first iteration takes significantly longer to calculate for all modes due to every ray being shaded. Many rays will fall off the scene and terminate after the first iteration. If we look at the material sort data, the performance is actually &lt;i&gt;worse&lt;/i&gt;. Compared to the base Pathtracer, the Material Sort has a 14% decrease in performance. The goal of material sorting is to keep similar materials close in memory to improve cache coherency and reduce high-cost memory calls to global memory. However, with 200 materials, the cost of sorting the materials buffer is significant (16ms added). If we factor our the additional 16ms per depth in the material sort optimization, the result is about equal to having no optimizations. Rerunning the test with only two materials showed no improvement to the algorithm. This tells me that the cost of reading material data is insignificant compared to the costs of computing the shader. As we’ll also see in the All optimization, the Material Sort optimization only serves to add 14-16ms per loop to the pathtracer.&lt;/p&gt;
+
+&lt;p&gt;| Material Sorting Performance|
+| —- |&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Num. Materials&lt;/th&gt;
+      &lt;th&gt;Avg. Duration&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;200&lt;/td&gt;
+      &lt;td&gt;133.4 ms&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;136.4 ms&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;More interesting are the Stream Compaction and First-Bounce Cache optimizations. When only Stream-Compaction is enabled, we can see that there is a 65% increase in performance from the Depth 1 to Depth 8. This makes sense, since each loop requires less CUDA kernels to execute.&lt;/p&gt;
+
+&lt;p&gt;| Ray Reduction Using Stream Compaction|
+| —- |&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Depth&lt;/th&gt;
+      &lt;th&gt;Active Rays&lt;/th&gt;
+      &lt;th&gt;% of Total&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2400000&lt;/td&gt;
+      &lt;td&gt;100.00%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;2392104&lt;/td&gt;
+      &lt;td&gt;99.67%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;1895971&lt;/td&gt;
+      &lt;td&gt;79.00%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;1715007&lt;/td&gt;
+      &lt;td&gt;71.46%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;1523808&lt;/td&gt;
+      &lt;td&gt;63.49%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;5&lt;/td&gt;
+      &lt;td&gt;1382218&lt;/td&gt;
+      &lt;td&gt;57.59%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;1253035&lt;/td&gt;
+      &lt;td&gt;52.21%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;7&lt;/td&gt;
+      &lt;td&gt;1144541&lt;/td&gt;
+      &lt;td&gt;47.69%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;8&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0%&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;The First-Bounce cache optimization similarly adds a huge benefit by not having to repeat the most costly iteration. Referring to the Ray Reduction table, we can see that by caching the first set of ray intersections, we avoid having to calculate intersections of 20% of the rays. By combining the First-Bounce cache and Stream Compaction optimizations, we can achieve the highest performance. However, there are many other optimizations that can be made to the pathtracer. Breaking the shader kernel down into smaller pieces can reduce divergence, especially when dealing with paths depending on random variations in reflection/refraction. It might be work sacrificing some randomness to keep all the threads in a warp in step with one another.&lt;/p&gt;
+
+&lt;p&gt;It is also interesting to see the performance difference between the optimized and unoptimized pathtracer with different scene complexities. I ran both optimized and unoptimized pathtracers through 3 scenes: 20 objects, 200 objects, and 2000 objects. The unoptimized pathtracer did significantly better in simple cases, but as the number of objects went up, the better the optimized pathtracer performed. There is a spike in duration for the optimized pathtracer in the second depth. This was measured and attributed to the extra work done to perform stream compaction on the second set of rays. After this initial spike the performance improves greatly. &lt;b&gt;In the most complex scene, the unoptimized pathtracer takes 916ms per iteration, while the optimized pathtracer needs only 426ms.&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/scene_complexity.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Lastly, I ran a comparison with a 200-Object scene with bounding walls and a scene with no walls. As was expected, the scene with no walls performed much better. This is due to the huge number pf rays that become irrelevant after even the first iteration. As can be seen in the charts below, the scene with no bounding walls loses 76% of its rays after the first bounce, while the bounded scene only loses 22% of its rays. &lt;b&gt;By the end of the iteration, the bounded scene still has 44% of its rays, while the unbounded scene has 0.3%.&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/walls_time.png&quot; alt=&quot;&quot; /&gt;
+&lt;img src=&quot;/assets/images/pathtracer/walls_rays.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;blp&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;bloopers&quot;&gt;Bloopers&lt;/h1&gt;
+
+&lt;p&gt;Lets laugh with me, not at me.&lt;/p&gt;
+
+&lt;p&gt;Sometimes you’re driving your milk truck and you just start to disassociate from the mortal plane.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/bad_milk.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;While working on the DOF, I was not transforming the right coordinates and the pathtracer decided to knock my camera to the ground.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/I_threw_it_on_the_ground.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;And lastly, the most frustrating bug. When calculating the new origin after a ray intersects another object, it is useful to bump the origin away from the actual intersection. This is done to tell the pathtracer that the ray has truly left the intersection. If the origin is not offset enough, the ray will bounce in an object for eternity. That is what was happening when I tried to calculate refraction. I ended up with some cool, cloudy balls, but it was, overall, a big use of my time.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/pathtracer/frust.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;ack&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&quot;acknowledgements&quot;&gt;Acknowledgements&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.pbr-book.org/&quot;&gt;Physically Based Rendering, Third Edition: From Theory To Implementation&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;PBRT3 was seriously the most useful resource I found. Many of my implementation details came from this work.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_pref01.html&quot;&gt;GPU Gems 3&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Another excellent resource, especially for understanding some of the complicated math behind these functions.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/syoyo/tinygltf&quot;&gt;tinygltf&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Library used for loading gltf files into my renderer. Also used some example code to speed up implementation.&lt;/p&gt;</content><author><name>John Marcao</name></author><category term="Projects" /><summary type="html">A Pathtracer developed using CUDA, Thrust, and OpenGL libraries.</summary></entry><entry><title type="html">DroneDAD</title><link href="http://localhost:4000/projects/dronedad/" rel="alternate" type="text/html" title="DroneDAD" /><published>2019-09-01T00:00:00-05:00</published><updated>2019-09-01T00:00:00-05:00</updated><id>http://localhost:4000/projects/dronedad</id><content type="html" xml:base="http://localhost:4000/projects/dronedad/">&lt;p&gt;DroneDAD is an IoT device designed from the ground up for ESE516 IoT Edge Computing at University of Pennsylvania. I worked with my partner &lt;a href=&quot;https://github.com/riddhindoshi&quot;&gt;Riddhi Doshi&lt;/a&gt; to go through the entire development lifecylce of the device.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Requirements and Design&lt;/li&gt;
+  &lt;li&gt;Component Selection&lt;/li&gt;
+  &lt;li&gt;Schematic Design and PCB Layout&lt;/li&gt;
+  &lt;li&gt;Manufacturing&lt;/li&gt;
+  &lt;li&gt;Testing&lt;/li&gt;
+  &lt;li&gt;LOTS of Testing&lt;/li&gt;
+  &lt;li&gt;Bootloader, Application, and Server Development&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Built With: Altium, Atmel Studio, Node-RED, IBM Cloud.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/jmarcao/DroneDAD&quot;&gt;Github Link&lt;/a&gt;&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+  &lt;img src=&quot;/assets/images/dronedad/closeup.jpg&quot; /&gt;
+&lt;/p&gt;
+
+&lt;h1 id=&quot;inspiration&quot;&gt;Inspiration&lt;/h1&gt;
+
+&lt;p&gt;The inspiration to build this device was to provide a simple PCB for the drones (mainly fixed-wing aircraft) that do not require a full-fledged data acquisition system at all points. It would measure the angle of attack of the aircraft and give effective stall warnings in real-time using the LEDs on board. This would specifically help the stunt pilots to push the aircraft to its limits and perform better.&lt;/p&gt;
+
+&lt;h1 id=&quot;what-it-does&quot;&gt;What it does&lt;/h1&gt;
+
+&lt;p&gt;Using an accelerometer and gyroscope, our device will calculate the angle of the drone it is mounted on and it will light up LEDs accordingly. It will also send this data to a web-service to provide flight data to a server and also give stall warning on the server. It is also capable of giving roll v/s time data. All the data is filtered while on the main dashboard, however, the raw accelerometer data can be viewed too on another tab.&lt;/p&gt;
+
+&lt;h1 id=&quot;sensors-and-actuators-used&quot;&gt;Sensors and Actuators used&lt;/h1&gt;
+
+&lt;p&gt;We used an accelerometer (MPU 9150) and SMD RGB LED actuators coupled with LED driver (LP3944ISQ/NOPB). These components were selected to fit within our budget while also providing the the necesary functions.&lt;/p&gt;
+
+&lt;h1 id=&quot;bootloader-implementation&quot;&gt;Bootloader Implementation&lt;/h1&gt;
+
+&lt;p&gt;Our Bootloader works by first reading a boot_status struct located on the NVM storage. This struct contains a flag saying if a firmware update was scheduled for the application. If the flag is set, then the bootloader will look at the install_index value in the boot_status. This value is then used to find the correct firmware version on the flash chip. The flash chip has a flash header where it stores the addresses of each FW version. The bootloader will read this struct and then go to the address corresponding to the install_index value. The bootloader then reads the firmware metadata struct from the flash memory. It then does a CRC check on the data in flash to confirm that it has not been altered. If that is successful, it will write the data to the NVM storage, again checking the CRC as it writes. When the write is complete, we do one last CRC check on the data on the NVM drive to confirm that we wrote it correctly. If everything is good, we reset the boot_status flag and restart. If the CRC fails, then the bootloader will not write to the NVM chip and will mark the FW update flag as false in the boot_status. The system will then reboot into the old firmware version. We include several CRC checks to ensure data integrity on the system.&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+  &lt;img src=&quot;/assets/images/dronedad/bootloader.jpg&quot; /&gt;
+  &lt;br /&gt;
+  &lt;img src=&quot;/assets/images/dronedad/memtable.jpg&quot; /&gt;
+&lt;/p&gt;
+
+&lt;h1 id=&quot;cloud-connection&quot;&gt;Cloud Connection&lt;/h1&gt;
+&lt;h3 id=&quot;data-sent-to-cloud&quot;&gt;Data Sent to Cloud&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Accelerometer Data: The device sends raw accelerometer data over three axes and the roll and pitch data in real time over the cloud. A different plot for each is displayed on the dashboard.&lt;/li&gt;
+  &lt;li&gt;The flight status(safe mode/critical mode/stalled mode) data is also sent to the cloud to display on the dashboard.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;data-received-from-the-cloud&quot;&gt;Data Received from the Cloud&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Every Aircraft could have a different stall angle. We set up the dashboard to send the required stall angle to the device.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;challenges&quot;&gt;Challenges&lt;/h1&gt;
+&lt;p&gt;As with every new thing did the first time, not everything that we thought of was achieved smoothly.&lt;/p&gt;
+
+&lt;h3 id=&quot;flipped-sda--scl-lines&quot;&gt;Flipped SDA &amp;amp; SCL lines&lt;/h3&gt;
+&lt;p&gt;We realized that we had flipped the SDA and SCL I2C connection on our SAM W25 chip. We ended up doing that on our backup I2C as well as original I2C connections.
+Solution: Scratch the bad traces and wire the swap!!&lt;/p&gt;
+
+&lt;h3 id=&quot;poor-accelerometer-selection&quot;&gt;Poor Accelerometer Selection&lt;/h3&gt;
+&lt;p&gt;We realized that the accelerometer we prototyped our design with (because of the unavailability of the chosen accelerometer) performed better and is more sensitive than the onboard accelerometer. Apparently, this particular accelerometer was better suited for other purposes like the phone.
+Solution: We removed the on-board accelerometer and used another external accelerometer.&lt;/p&gt;
+
+&lt;h3 id=&quot;led-driver-out-of-stock&quot;&gt;LED Driver Out of Stock&lt;/h3&gt;
+&lt;p&gt;On the week of submission to PCB manufacturer, the original LED Driver was out of stock. The lead time for additional parts was too great to meet our deadline.
+Solution: We had to look for a part with the same pin mapping. We found an alternative, but it could drive only 2 colours in the RGB LED.&lt;/p&gt;
+
+&lt;h3 id=&quot;led-footprint-flipped&quot;&gt;LED Footprint Flipped&lt;/h3&gt;
+&lt;p&gt;Since we ended up making the footprint ourselves for this LED, somehow we messed it up at some point and we mirrored it.
+Solution: We whitewired the circuit and make one colour work and rely on different patterns of the blinking to give different level of warnings.&lt;/p&gt;
+
+&lt;h1 id=&quot;accomplishments&quot;&gt;Accomplishments&lt;/h1&gt;
+&lt;p&gt;We are really proud of the final PCB design and the way our board has finally come up. It was a thrilling challenge to work with such high packing density on the first board and finally, not having errors that can’t be solved at all without redesigning the complete board.&lt;/p&gt;
+
+&lt;h1 id=&quot;whats-next-for-dronedad&quot;&gt;What’s next for DroneDAD&lt;/h1&gt;
+&lt;p&gt;Better accelerometer, careful schematics, more debugging points, more LEDs and a promise to keep it looking as cool as it does!&lt;/p&gt;</content><author><name>John Marcao</name></author><category term="Projects" /><summary type="html">An IoT device for aquriring accelerometer data from a drone and reporting the data to a server over WIFI.</summary></entry></feed>

@@ -1,0 +1,726 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>CUDA Pathtracer - John Marcao</title>
+<meta name="description" content="A Pathtracer developed using CUDA, Thrust, and OpenGL libraries.">
+
+
+  <meta name="author" content="John Marcao">
+  
+  <meta property="article:author" content="John Marcao">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="John Marcao">
+<meta property="og:title" content="CUDA Pathtracer">
+<meta property="og:url" content="http://localhost:4000/projects/cuda-pathtracer/">
+
+
+  <meta property="og:description" content="A Pathtracer developed using CUDA, Thrust, and OpenGL libraries.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2019-09-29T00:00:00-05:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/projects/cuda-pathtracer/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="John Marcao Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          John Marcao
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/">Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+    <div class="author__avatar">
+      <a href="http://localhost:4000/">
+        <img src="/assets/images/bio-photo.jpg" alt="John Marcao" itemprop="image" class="u-photo">
+      </a>
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">John Marcao</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <p>Software Engineer, Nature Lover, Math Enthusiast</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://github.com/jmarcao" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="CUDA Pathtracer">
+    <meta itemprop="description" content="A Pathtracer developed using CUDA, Thrust, and OpenGL libraries. ">
+    <meta itemprop="datePublished" content="2019-09-29T00:00:00-05:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/projects/cuda-pathtracer/" class="u-url" itemprop="url">CUDA Pathtracer
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          13 minute read
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <p><img src="/assets/images/pathtracer/material_comp.png" alt="" /></p>
+
+<p><a href="https://github.com/jmarcao/CUDA-Path-Tracer">Github Link</a></p>
+
+<h1 id="contents">Contents</h1>
+<ul>
+  <li><a href="#intro">Introduction to Pathtracing</a></li>
+  <li><a href="#impl">Pathtracer Implementation</a>
+    <ul>
+      <li>Visual Effects
+        <ul>
+          <li><a href="#diff">Ideal Diffuse Scattering Function</a></li>
+          <li><a href="#refl">Imperfect Specular Reflective Scattering Function</a></li>
+          <li><a href="#refrac">Refractive Transmission Scattering Function</a></li>
+          <li><a href="#fe">Fresnel Effect</a></li>
+          <li><a href="#aa">Antialiasing</a></li>
+          <li><a href="#dof">Depth of Field</a></li>
+          <li><a href="#mb">Motion Blur</a></li>
+          <li><a href="#gltf">glTF Objects</a></li>
+        </ul>
+      </li>
+      <li>Performance Improvements
+        <ul>
+          <li><a href="#comc">Compaction of Terminated Rays</a></li>
+          <li><a href="#fbc">First-Bounce Caching</a></li>
+          <li><a href="#ms">Material Sorting</a></li>
+          <li><a href="#pcomp">Performance Comparison</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#blp">Bloopers</a></li>
+  <li><a href="#ack">Acknowledgements</a></li>
+</ul>
+
+<p><a name="intro"></a></p>
+<h1 id="introduction-to-pathtracing">Introduction to Pathtracing</h1>
+<p>Starting this project, I had minimal knowledge of pathtracing. All I knew is that it was somewhat related to raytracing and I knew it was a Big Deal for games. If you’re familiar with pathtracing/raytracing, feel free to skip ahead to my project details. Otherwise I’ll talk a bit about pathtracing and how it works in general.</p>
+
+<p>Rendering is hard. There are a lot of materials in the world. Creating a realistic representation through traditional rendering can be tedious and, in the end, doesn’t look that great. PPathtracing provides a more realistic rendered image by simulating the laws of physics. Simply, a number of rays are generated on a point representing our camera. Each ray is then sent out in in each direction from the point. For each ray, the pathtracer calculates where it will intersect from its current position and direction and then calculates where its going next. This is done with the help of our shaders. The shaders determine not only the color of the bounced ray, but in what direction it is going. This is where the physical properties of the material come into play.</p>
+
+<p>Each object in the scene can be Reflective, Refractive, Diffuse, or proportion of the three. The ratios and properties of each material are used when rendering to more accurately simulate the light-material interactions we would see in the real world. When light interacts with a diffuse object (think chalkboard) it can bounce in any direction. This creates a rough, plain looking surface. Reflective materials (think a mirror or a chrome fender) bounce rays in a generally consistent direction. Perfectly reflective materials are more likely to bounce it in a particular direction, while less reflective materials will have a bit more divergence. Refractive materials (think water) will allow most light to pass through, but the path of the light will change. I talk more about the physics of each further down.</p>
+
+<p>The pathtracer looks at each intersection between a ray and a material and picks one of the properties to apply, and if enough rays are used enough times, this averages out to look pretty realistic. The pathtracer will generate rays from a camera, bounce them around the scene a couple times, and then repeat this process. Over many samples, the image starts to converge and look good. There are some problems with sampling this way, but as we’ll see in a bit the pathtracer can add noise to each sample to create small differences in the initial rays for each sample. This creates a smoother image and tries to hide some of the imperfections of digital rendering.</p>
+
+<p><a name="impl"></a></p>
+<h1 id="pathtracer-implementation">Pathtracer Implementation</h1>
+<p>The base pathtracer given to me had functions to read in scene descriptions, fire off rays, and do minimal shading. I implemented additional shaders and features to improve the quality and capabilities of the renderer. I’ve split this into two groups, visual improvements and performance improvements.</p>
+
+<h3 id="visual-improvements">Visual Improvements</h3>
+<ul>
+  <li>Ideal Diffuse Scattering Function</li>
+  <li>Imperfect Specular Reflective Scattering Function</li>
+  <li>Refractive Transmission Scattering Function using Fresnel Effects and Shlick’s Approximation</li>
+  <li>Antialiasing with Stochastic Sampling</li>
+  <li>Depth of Field</li>
+  <li>Motion Blur Effects</li>
+  <li>Loading of glTF Object Files (Partial)</li>
+</ul>
+
+<h2 id="performance-improvements">Performance Improvements</h2>
+<ul>
+  <li>Compaction of Terminated Rays</li>
+  <li>First-Bounce Caching</li>
+  <li>Material Sorting for Memory coherence</li>
+</ul>
+
+<p>In the following sections I’ll discuss each objects implementation and its effects.</p>
+
+<p><a name="diff"></a></p>
+<h1 id="ideal-diffuse-scattering-function">Ideal Diffuse Scattering Function</h1>
+<p>This was mostly a freebie so I will not go into it in too much detail. When a ray intersects a non-specular object, it will bounce the incoming ray in a random direction in a hemisphere about the normal. This is done by taking a random θ and ψ around the normal and mapping it to cartesian coordinates.</p>
+
+<p><img src="/assets/images/pathtracer/diffuse_annot.png" alt="" /></p>
+
+<p><a name="refl"></a></p>
+<h1 id="imperfect-specular-reflective-scattering-function">Imperfect Specular Reflective Scattering Function</h1>
+<p>Reflective materials have a ‘shininess’ property that changes how reflective they are. A mirror, for example, is nearly perfectly reflective. A chrome bumper on a car may be less reflective, and a small marbles even less so. This is represented in the pathtracer by using importance sampling. A perfectly reflective object (shininess → ∞) will always bounce a ray at θ<sub>i</sub> = θ<sub>o</sub>. However, for smaller shininess values, the ray will bounce in some distribution centered on the perfectly reflected ray. My renderer determines this by taking n = shininess, R = &amp;Uscr;[0,1), and ψ<sub>o</sub> = acos(R<sup>1 / n + 1</sup>) and θ<sub>o</sub> = 2πR. I then take these values, transform them to the proper coordinates, and then transform it to be centered on the normal. Observe that for infinite n, ψ<sub>o</sub> will be 0<sup>o</sup>, so there would be no change from the perfectly reflected angle.</p>
+
+<p><img src="/assets/images/pathtracer/refl_annot.png" alt="" /></p>
+
+<p><a name="refrac"></a></p>
+<h1 id="refractive-transmission-scattering-function">Refractive Transmission Scattering Function</h1>
+<p>Refraction is a bit trickier from the above two because of a couple of unique properties. First of all, there is the case of total internal reflection. After a certain critical angle θ<sub>c</sub>, the ray will not transmit through the material and it will simply reflect off of the surface (internal or external). This can be seen in the real world by looking out on the ocean during a sunset. Light from the sun will mostly bounce off the surface of the water to your eyes. High indices of refraction η will lead to greater distortion of the rays moving through the medium.</p>
+
+<p><img src="/assets/images/pathtracer/refract_annot.png" alt="" /></p>
+
+<p><a name="fe"></a></p>
+<h1 id="fresnel-effect">Fresnel Effect</h1>
+<p>Additionally, we must take Fresnel Effects into consideration. On a reflective/refractive surface, fresnel effects will cause reflections to appear stronger at narrower θ and weaker at wider θ. I use Shlick’s Approximation to produce a good-enough estimation on when a ray will reflect back and when it will transmit through. Note this is a different check than the critical angle.</p>
+
+<p><img src="/assets/images/pathtracer/fres_annot.png" alt="" /></p>
+
+<p><a name="aa"></a></p>
+<h1 id="antialiasing">Antialiasing</h1>
+<p>Because the camera generates sample points in a regular pattern, rays will always strike the center of each pixel on the first bounce. This can lead to jagged edges on objects since the pixel is not entirely one color, but the point sampled is just one color. I implement anti-aliasing by applying a &amp;PlusMinus;0.5f jitter to each ray when it is generated at the camera. This will allow our samples to randomly hit a position in the first pixel, and then these random points are samples over many iterations to produce an average of the colors in that pixel. This random sampling to produce a better average is known as stochastic sampling.</p>
+
+<p><img src="/assets/images/pathtracer/aa_comp.png" alt="" /></p>
+
+<p><a name="dof"></a></p>
+<h1 id="depth-of-field">Depth of Field</h1>
+<p>In the base pathtracer, the camera is treated as a pinhole-camera. That is, all the rays begin at the same point, minus some small jitter from the Antialiasing if enabled. In a real world camera, there is a lens and a focal distance included. I simulate this in my pathtracer by projecting each sample onto a small concentric disk with lens radius r a focal distance &amp;fpartint; from the camera. This creates a depth-of-filed effect that can be controlled by modifying the two variables. Increasing the lens radius increases the blurring effect seen as objects move out of focus. Increasing the focal distance moves the focal plane back, increasing the depth of focus.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>&amp;fpartint; = 5, r = 0.01</th>
+      <th>&amp;fpartint; = 15, r = 0.01</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><img src="/assets/images/pathtracer/dof/r0.1_f5.png" alt="" /></td>
+      <td><img src="/assets/images/pathtracer/dof/r0.1_f15.png" alt="" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>&amp;fpartint; = 5, r = 0.05</th>
+      <th>&amp;fpartint; = 15, r = 0.5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><img src="/assets/images/pathtracer/dof/r0.5_f5.png" alt="" /></td>
+      <td><img src="/assets/images/pathtracer/dof/r0.5_f15.png" alt="" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><a name="mb"></a></p>
+<h1 id="motion-blur">Motion Blur</h1>
+<p>A normal camera has a shutter open and a shutter close time. The final image from the camera naturally integrates over that time frame, but my renderer does not take time into account. If an object was moving in the scene, the movement would not be perceptible. I added a motion blur feature to account for this. Each object can be defined with a velocity vector in the scene description file. Each ray is then assigned a random point in time from 0 to 1. When intersections are tested, the render transforms each object by adding the displacement caused by the object velocity at that point in time.  This creates a nice blurring effect, amplified by the velocity of the object.</p>
+
+<p><img src="/assets/images/pathtracer/mb_annot.png" alt="" /></p>
+
+<p><a name="gltf"></a></p>
+<h1 id="gltf-objects">glTF Objects</h1>
+<p>I implemented the tools needed to load glTF files and convert them into the objects used by my renderer. However, I stopped short at implementing just the physical geometries of the object and not the textures. My renderer also has lots of trouble with any complicated geometry, likely due to my intersection test having no current methods of culling objects. Overall it allows for some uninteresting objects to load. Future work would include loading textures and adding performance optimizations to allow for more interesting objects to be loaded.</p>
+
+<p><img src="/assets/images/pathtracer/milk.png" alt="" /></p>
+
+<p><a name="comc"></a></p>
+<h1 id="compaction-of-terminated-rays">Compaction of Terminated Rays</h1>
+<p>The pathtracer will fire off one ray per pixel at first, but many of those rays will terminate by falling off the scene or hitting a light source. Computing on these rays is wasteful and would lead to wasted threads in our warps and blocks. After each shading step, the device data containing all arrays is partitioned into an alive side and a terminated side. The ray buffer length is then adjusted so subsequent kernels will only operate on the living rays. This reduces the number of wasted threads per loop.</p>
+
+<p><a name="fbc"></a></p>
+<h1 id="first-bounce-caching">First-Bounce Caching</h1>
+<p>The camera generates rays in every direction on the first iteration, and many rays terminate after the first iteration. This leads to a very expensive first iteration normally. To help reduce the cost of this first iteration, the first set of bounces and shaders are cached by the renderer so that subsequent samples can reuse the cached first iteration data. This does not help when antialiasing is used since each first iteration is jittered randomly. Therefore, when antialiasing is enabled, the first iteration cache is disabled.</p>
+
+<p><a name="ms"></a></p>
+<h1 id="material-sorting">Material Sorting</h1>
+<p>To improve kernel performance, I sort the arrays used for intersections by the material ID. This helps by reducing the largest divergence split in the shaders. When the shader starts, it looks at the properties of the material and then choses a distribution function based on that. If a diffuse material, reflective material, and refractive material are all in the same warp, this leads to horrendous performance. Each kernel will diverge in the early stages of the shader and each will have to perform serially. By grouping materials together, divergence is limited to instances where the angle of incidence causes some unique behavior in each kernel.</p>
+
+<p><a name="pcomp"></a></p>
+<h1 id="performance-comparison">Performance Comparison</h1>
+<p>Combining the above three optimizations, I generated a scene of 2000 random spheres bounded in a room. I also calculated 200 unique materials randomly distributed between the spheres. I then ran each 5 scenarios under different configurations to collect my data, measuring the elapsed milliseconds for each iteration of the CUDA renderer. The chart below contains average values for each iteration across 200 samples. I excluded the first iteration of the Pathtracer to show the advantage of the First-Bounce caching optimization.</p>
+
+<p><img src="/assets/images/pathtracer/iteration_duration_chart.png" alt="" /></p>
+
+<p>Running with no optimizations provides a solid baseline to the Pathtracer. The first iteration takes significantly longer to calculate for all modes due to every ray being shaded. Many rays will fall off the scene and terminate after the first iteration. If we look at the material sort data, the performance is actually <i>worse</i>. Compared to the base Pathtracer, the Material Sort has a 14% decrease in performance. The goal of material sorting is to keep similar materials close in memory to improve cache coherency and reduce high-cost memory calls to global memory. However, with 200 materials, the cost of sorting the materials buffer is significant (16ms added). If we factor our the additional 16ms per depth in the material sort optimization, the result is about equal to having no optimizations. Rerunning the test with only two materials showed no improvement to the algorithm. This tells me that the cost of reading material data is insignificant compared to the costs of computing the shader. As we’ll also see in the All optimization, the Material Sort optimization only serves to add 14-16ms per loop to the pathtracer.</p>
+
+<p>| Material Sorting Performance|
+| —- |</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Num. Materials</th>
+      <th>Avg. Duration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>200</td>
+      <td>133.4 ms</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>136.4 ms</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>More interesting are the Stream Compaction and First-Bounce Cache optimizations. When only Stream-Compaction is enabled, we can see that there is a 65% increase in performance from the Depth 1 to Depth 8. This makes sense, since each loop requires less CUDA kernels to execute.</p>
+
+<p>| Ray Reduction Using Stream Compaction|
+| —- |</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Depth</th>
+      <th>Active Rays</th>
+      <th>% of Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>2400000</td>
+      <td>100.00%</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>2392104</td>
+      <td>99.67%</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>1895971</td>
+      <td>79.00%</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>1715007</td>
+      <td>71.46%</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>1523808</td>
+      <td>63.49%</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>1382218</td>
+      <td>57.59%</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>1253035</td>
+      <td>52.21%</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>1144541</td>
+      <td>47.69%</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>0</td>
+      <td>0%</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The First-Bounce cache optimization similarly adds a huge benefit by not having to repeat the most costly iteration. Referring to the Ray Reduction table, we can see that by caching the first set of ray intersections, we avoid having to calculate intersections of 20% of the rays. By combining the First-Bounce cache and Stream Compaction optimizations, we can achieve the highest performance. However, there are many other optimizations that can be made to the pathtracer. Breaking the shader kernel down into smaller pieces can reduce divergence, especially when dealing with paths depending on random variations in reflection/refraction. It might be work sacrificing some randomness to keep all the threads in a warp in step with one another.</p>
+
+<p>It is also interesting to see the performance difference between the optimized and unoptimized pathtracer with different scene complexities. I ran both optimized and unoptimized pathtracers through 3 scenes: 20 objects, 200 objects, and 2000 objects. The unoptimized pathtracer did significantly better in simple cases, but as the number of objects went up, the better the optimized pathtracer performed. There is a spike in duration for the optimized pathtracer in the second depth. This was measured and attributed to the extra work done to perform stream compaction on the second set of rays. After this initial spike the performance improves greatly. <b>In the most complex scene, the unoptimized pathtracer takes 916ms per iteration, while the optimized pathtracer needs only 426ms.</b></p>
+
+<p><img src="/assets/images/pathtracer/scene_complexity.png" alt="" /></p>
+
+<p>Lastly, I ran a comparison with a 200-Object scene with bounding walls and a scene with no walls. As was expected, the scene with no walls performed much better. This is due to the huge number pf rays that become irrelevant after even the first iteration. As can be seen in the charts below, the scene with no bounding walls loses 76% of its rays after the first bounce, while the bounded scene only loses 22% of its rays. <b>By the end of the iteration, the bounded scene still has 44% of its rays, while the unbounded scene has 0.3%.</b></p>
+
+<p><img src="/assets/images/pathtracer/walls_time.png" alt="" />
+<img src="/assets/images/pathtracer/walls_rays.png" alt="" /></p>
+
+<p><a name="blp"></a></p>
+<h1 id="bloopers">Bloopers</h1>
+
+<p>Lets laugh with me, not at me.</p>
+
+<p>Sometimes you’re driving your milk truck and you just start to disassociate from the mortal plane.</p>
+
+<p><img src="/assets/images/pathtracer/bad_milk.png" alt="" /></p>
+
+<p>While working on the DOF, I was not transforming the right coordinates and the pathtracer decided to knock my camera to the ground.</p>
+
+<p><img src="/assets/images/pathtracer/I_threw_it_on_the_ground.png" alt="" /></p>
+
+<p>And lastly, the most frustrating bug. When calculating the new origin after a ray intersects another object, it is useful to bump the origin away from the actual intersection. This is done to tell the pathtracer that the ray has truly left the intersection. If the origin is not offset enough, the ray will bounce in an object for eternity. That is what was happening when I tried to calculate refraction. I ended up with some cool, cloudy balls, but it was, overall, a big use of my time.</p>
+
+<p><img src="/assets/images/pathtracer/frust.png" alt="" /></p>
+
+<p><a name="ack"></a></p>
+<h1 id="acknowledgements">Acknowledgements</h1>
+<p><a href="http://www.pbr-book.org/">Physically Based Rendering, Third Edition: From Theory To Implementation</a></p>
+
+<p>PBRT3 was seriously the most useful resource I found. Many of my implementation details came from this work.</p>
+
+<p><a href="https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_pref01.html">GPU Gems 3</a></p>
+
+<p>Another excellent resource, especially for understanding some of the complicated math behind these functions.</p>
+
+<p><a href="https://github.com/syoyo/tinygltf">tinygltf</a></p>
+
+<p>Library used for loading gltf files into my renderer. Also used some example code to speed up implementation.</p>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#projects" class="page__taxonomy-item p-category" rel="tag">Projects</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2019-09-29T00:00:00-05:00">September 29, 2019</time></p>
+
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=CUDA+Pathtracer%20http%3A%2F%2Flocalhost%3A4000%2Fprojects%2Fcuda-pathtracer%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fprojects%2Fcuda-pathtracer%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fprojects%2Fcuda-pathtracer%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/projects/dronedad/" class="pagination--pager" title="DroneDAD
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h2 class="page__related-title">You May Also Enjoy</h2>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/projects/dronedad/" rel="permalink">DroneDAD
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          4 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">An IoT device for aquriring accelerometer data from a drone and reporting the data to a server over WIFI.
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 John Marcao. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
