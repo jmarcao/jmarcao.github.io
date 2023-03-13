@@ -10,4 +10,10 @@ var store = [{
         "tags": [],
         "url": "/projects/cuda-pathtracer/",
         "teaser": null
+      },{
+        "title": "Parallel AES",
+        "excerpt":"Parallelizing AES with CUDA ====================== University of Pennsylvania, CIS 565: GPU Programming and Architecture, Project 4 John Marcao LinkedIn Personal Website Tested on: Windows 10, i5-4690K @ 3.50GHz, 8GB DDR3, RTX 2080 TI 3071MB (Personal) Overview In this project I implemented AES128, AES192, and AES256 in Electronic Codebook (ECB) and...","categories": ["Projects"],
+        "tags": [],
+        "url": "/projects/parallel-aes-gpu/",
+        "teaser": null
       }]

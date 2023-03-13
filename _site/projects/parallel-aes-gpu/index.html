@@ -1,0 +1,720 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Parallel AES - John Marcao</title>
+<meta name="description" content="Testing implementations of AES using a GPU and various optimizations">
+
+
+  <meta name="author" content="John Marcao">
+  
+  <meta property="article:author" content="John Marcao">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="John Marcao">
+<meta property="og:title" content="Parallel AES">
+<meta property="og:url" content="http://localhost:4000/projects/parallel-aes-gpu/">
+
+
+  <meta property="og:description" content="Testing implementations of AES using a GPU and various optimizations">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2019-10-10T00:00:00-05:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/projects/parallel-aes-gpu/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="John Marcao Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          John Marcao
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/">Categories</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/">Tags</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+    <div class="author__avatar">
+      <a href="http://localhost:4000/">
+        <img src="/assets/images/profile.jpg" alt="John Marcao" itemprop="image" class="u-photo">
+      </a>
+    </div>
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">John Marcao</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <p>Software Engineer, Nature Lover, Math Enthusiast</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://github.com/jmarcao" rel="nofollow noopener noreferrer me" itemprop="sameAs"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page h-entry" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Parallel AES">
+    <meta itemprop="description" content="Testing implementations of AES using a GPU and various optimizations">
+    <meta itemprop="datePublished" content="2019-10-10T00:00:00-05:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/projects/parallel-aes-gpu/" class="u-url" itemprop="url">Parallel AES
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          10 minute read
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="text">
+        
+        <h1 id="parallelizing-aes-with-cuda">Parallelizing AES with CUDA</h1>
+<p>======================</p>
+
+<p><strong>University of Pennsylvania, CIS 565: GPU Programming and Architecture, Project 4</strong></p>
+
+<ul>
+  <li>John Marcao
+    <ul>
+      <li><a href="https://www.linkedin.com/in/jmarcao/">LinkedIn</a></li>
+      <li><a href="https://jmarcao.github.io">Personal Website</a></li>
+    </ul>
+  </li>
+  <li>Tested on: Windows 10, i5-4690K @ 3.50GHz, 8GB DDR3, RTX 2080 TI 3071MB (Personal)</li>
+</ul>
+
+<h1 id="overview">Overview</h1>
+<p>In this project I implemented AES128, AES192, and AES256 in Electronic Codebook (ECB) and Counter (CTR) modes. ECB and CTR are great candidates for parallelization thanks to predictable or independent IVs. I began by implementing AES on the CPU. I followed examples directly from the AES Algorithm and the <a href="https://github.com/kokke/tiny-AES-c">tiny-aes-C</a> implementation. After verifying that the algorithms were correct with NIST test vectors, I developed a naive GPU imeplementation. I designed the algorithm to operate on each block in parallel. This implementation was already significantly faster than the CPU. using NSight, I profiled the application to find bottlenecks and places to improve. Iterating over several different versions, I finally settled on an optimized implementation was 92% faster than the naive GPU implementation. I focused on utilizing shared memory, reducing calls to global memory, and changing 8bit operations to 32bit operations and unrolling loops. I also added lookup tables to reduce some repetitive operations.</p>
+
+<pre><code class="language-C">// AES Algorithm Overview
+
+// Initial Setup
+KeyExpansion()
+AddRoundKey()
+
+// Rounds 1 to {9, 11, 13}
+for round in rounds do:
+    SubBytes()
+    ShiftRows()
+    MixColumns()
+    AddRoundKey()
+
+// Final Round
+SubBytes()
+ShiftRows()
+AddRoundKey()
+</code></pre>
+
+<h1 id="aes-algorithm-choices">AES Algorithm Choices</h1>
+<p>ECB was chosen because of its simple and parallelizable design. ECB encrypts every block with the same key, which is incredibly insecure, but it is simple to implement. Since each block can be encrypted independently, there is no issue.</p>
+
+<p>CTR mode works by encrypting an IV joined with a unique counter value, and then XORing the encrypted value with a plaintext block to produce a ciphertext block. Since the counter can be calculated for each block ahead of time, it is easy to parallelize this. Each block receives a base IV and counter value and then increments the counter by the block index. Counter overflow is accounted for and each block receives a unique key.</p>
+
+<h1 id="design-choices">Design Choices</h1>
+<p>When implementing these algorithms in CUDA, I chose to parallelize each block. I did this to make the implementation simpler. This also means each encrypt/decrypt operations only has one CUDA kernel launch point, with one thread per block. Alternatively, I could have launched a CUDA kernel for each step in the AES algorithm. This would have allowed for even greater parallelization, especially during the SubBytes and InverseSubBytes steps. However, I decided against it for two reasons:
+    1) The implementation would be more complicated.
+    2) Reduced efficiency of shared memory.
+By launching one thread per block, I can set up a phase where the kernels load lookup tables into shared memory. As we’ll see in a bit, this provided a significant boost to performance.</p>
+
+<h1 id="measurements">Measurements</h1>
+<p>My test application creates a buffer of test data and a test key and IV. I then call each implementation (CPU, GPU_NAIVE, GPU_OPTIMIZED) with each AES flavor (AES128, AES192, AES256). I encrypt each test buffer 5 times and then average the result. I noticed during testing that some runs would take significantly longer than others, so I wanted to smooth out that irregularity. I also added an option to pass the test buffer size in from the command line. If the test buffer is over 64MB, the tester will skip the CPU tests since those can take VERY long. This can be disabled by using a ‘-c’ option to force the tester to always run CPU performance tests.</p>
+
+<h1 id="optimization-results">Optimization Results</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Encrypting 64 MB in ECB AES256</th>
+      <th> </th>
+      <th> </th>
+      <th> </th>
+      <th> </th>
+      <th> </th>
+      <th> </th>
+      <th> </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Implementation</td>
+      <td>Duration (ms)</td>
+      <td>Memory Throughput (GB/s)</td>
+      <td>No Warps Eligible (%)</td>
+      <td>MIO Throttle (inst)</td>
+      <td>MIO Throttle (%)</td>
+      <td>LG Throttle (inst.)</td>
+      <td>LG Throttle (%)</td>
+    </tr>
+    <tr>
+      <td>Unoptimized</td>
+      <td>42.23</td>
+      <td>4.11</td>
+      <td>96.63</td>
+      <td>0.18</td>
+      <td>0</td>
+      <td>213</td>
+      <td>93</td>
+    </tr>
+    <tr>
+      <td>+ Lookup Tables</td>
+      <td>31.17</td>
+      <td>5.27</td>
+      <td>95.71</td>
+      <td>140.75</td>
+      <td>80</td>
+      <td>9.88</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>+ Shared Memory</td>
+      <td>28.95</td>
+      <td>5.35</td>
+      <td>96.64</td>
+      <td>4.27</td>
+      <td>2</td>
+      <td>176.1</td>
+      <td>84</td>
+    </tr>
+    <tr>
+      <td>+ 32bit Operations</td>
+      <td>20.12</td>
+      <td>7.44</td>
+      <td>95.06</td>
+      <td>21.09</td>
+      <td>14</td>
+      <td>114.3</td>
+      <td>76</td>
+    </tr>
+    <tr>
+      <td>+ Block Copy</td>
+      <td>2.29</td>
+      <td>58.69</td>
+      <td>69.39</td>
+      <td>18</td>
+      <td>73</td>
+      <td>0.35</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>To collect a snapshot of what each optimization introduced to my design, I ran the same test with various optimizations enabled and disabled. The table above summarizes the changes and the effect each. For each implementation, the optimization above it is included, since each layer depends on the previous layer to be efficient.</p>
+
+<p>For the AES MixColumns step, the block is multiplied with a set matrix. The matrix is designed to produce a unique output for each input to the matrix multiplication. (Sidenote: The mathematics behind it, Galois Fields, is super interesting and I spent a solid hour just learning how those work and how it applies to AES). Since the matrix is a constant and we are multiplying it with a byte, it is efficient to write a lookup table for each multiplication. For encryption, we need two tables (mul2 and mul3) and for decryption we need four (mul9, mulB, mulD, mulE). My first optimization was to store these in constant memory for each thread to access. This gave some small bumps in performance across the board, but greatly increased the MIO throttle. This is because accesses to the lookup table are mostly random. Each thread in a CUDA warp that wanted to read form the table had to do so serially.</p>
+
+<pre><code class="language-C">// Table for mix_rows multiplication by 2
+__constant__ static const uint8_t c_mul2[] = {
+	0x00, 0x02, 0x04, 0x06, 0x08, 0x0a, 0x0c, 0x0e, 0x10, 0x12, 0x14, 0x16, 0x18, 0x1a, 0x1c, 0x1e, 
+	...
+	0xfb, 0xf9, 0xff, 0xfd, 0xf3, 0xf1, 0xf7, 0xf5, 0xeb, 0xe9, 0xef, 0xed, 0xe3, 0xe1, 0xe7, 0xe5
+};
+
+// Table for mix_rows multiplication by 3
+__constant__ static const uint8_t c_mul3[] = {
+	0x00, 0x03, 0x06, 0x05, 0x0c, 0x0f, 0x0a, 0x09, 0x18, 0x1b, 0x1e, 0x1d, 0x14, 0x17, 0x12, 0x11, 
+	...
+	0x0b, 0x08, 0x0d, 0x0e, 0x07, 0x04, 0x01, 0x02, 0x13, 0x10, 0x15, 0x16, 0x1f, 0x1c, 0x19, 0x1a
+};
+</code></pre>
+
+<p>To improve the performance of the lookup tables, I created regions in shared memory to store them. In shared memory the threads would be closer to the data and would not be limited by the cost of serializing a constant memory access. I implemented this by having a shared memory buffer allocated for each lookup table and then having each thread in the kernel launch read a portion of the data into shared memory. If not enough threads exist to read all the data, then thread 0 does all the reading as a backup. This gave a small improvement in performance again, but still not enough. The bottleneck was again the LG (Local Global Memory Access) throttle.</p>
+
+<p>NSight suggested that LG Throttling is a sign of reading too much data at once. LG Throttling occurs when the memory request pipelines are full and the thread refuses to be scheduled until the pipeline has room. To reduce this, I changed each 8bit access to Local and Global memory to a 32bit access, when possible. This was an interesting change, since it introduced a lot of changes. I unrolled several loops to help bundle data reads together. This also led me to add a small optimization to the ShiftRows step. Before, I was calculating each row shift programmatically. This required reading 8 bits from each of 4 32bit values. I unrolled my loops and changed it to read 4 32bit words instead of 12 8bit words spread around. This also let me precompute the actual location of each byte. What previously involved several adds and multiplies to calculate proper index values turned into a series of simple shift and bitwise operations. To me, this was the most interesting optimization.</p>
+
+<pre><code class="language-C">// ShiftRows Step Objective
+// Transform the matrix on the left to the one on the right
+/*
+	| 0  1  2  3 |       | 0  5  A  F |
+	| 4  5  6  7 |  --&gt;  | 4  9  E  3 |
+	| 8  9  A  B |  --&gt;  | 8  D  2  7 |
+	| C  D  E  F |       | C  1  6  B |
+*/
+
+// Unoptimized: 12 8bit reads, 12 8bit writes
+...
+uint8_t tmp[4];
+for (int row = 1; row &lt; N_ROWS; row++) {
+	tmp[0] = data[row + N_COLS * 0];
+	tmp[1] = data[row + N_COLS * 1];
+	tmp[2] = data[row + N_COLS * 2];
+	tmp[3] = data[row + N_COLS * 3];
+	data[row + N_COLS * 0] = tmp[mod4(0 + row)];
+	data[row + N_COLS * 1] = tmp[mod4(1 + row)];
+	data[row + N_COLS * 2] = tmp[mod4(2 + row)];
+	data[row + N_COLS * 3] = tmp[mod4(3 + row)];
+}
+...
+
+// Optimized: 4 32bit reads, 4 32bit writes
+...
+uint32_t c0 = ((uint32_t*)data)[0];
+uint32_t c1 = ((uint32_t*)data)[1];
+uint32_t c2 = ((uint32_t*)data)[2];
+uint32_t c3 = ((uint32_t*)data)[3];
+
+// Don't calculate indices, we already know what the result should be
+// #define BYTE0(x) (x &amp; 0x000000FF), etc...
+((uint32_t*)data)[0] = BYTE0(c0) | BYTE1(c1) | BYTE2(c2) | BYTE3(c3);
+((uint32_t*)data)[1] = BYTE0(c1) | BYTE1(c2) | BYTE2(c3) | BYTE3(c0);
+((uint32_t*)data)[2] = BYTE0(c2) | BYTE1(c3) | BYTE2(c0) | BYTE3(c1);
+((uint32_t*)data)[3] = BYTE0(c3) | BYTE1(c0) | BYTE2(c1) | BYTE3(c2);
+...
+</code></pre>
+
+<p>My last optimization came way too late. I realized that accesses to each threads block data was going all the way out to global memory. This was useless, since no other thread would read or write to that memory. I added a copy of the 16byte block from global to thread-local memory and then performance SOARED. This makes sense, obviously. After moving all my data to thread local or SM local memory, my access to Global space was nearly zero. According to NSight, i read a total of 64MB (the actual block data, required) from Device Memory and wrote all of it back (save the data read for lookup tables). As can be seen below, memory read from the device and global memory dropped significantly. This ended up being the largest optimization, increasing memory throughput +1,327% from the unoptimized implementation.</p>
+
+<p><img src="img/memory_access_opt_vs_unopt.JPG" alt="" /></p>
+
+<h1 id="algorithm-results">Algorithm Results</h1>
+<p>I implemented a performance test mode in my application to easily compare each algorithm’s throughput. The tester runs each algorithm 5 times and averages the result. The validity of the results are not checked in the performance tester, though that can be done through the ‘-t’ option.</p>
+
+<p><img src="img/example_performance_output.JPG" alt="" /></p>
+
+<p>I ran the tester over several test buffer sizes to see how each stacks up against the other.</p>
+
+<p><img src="img/pchart_cpu.png" alt="" /></p>
+
+<p>Looking at the chart, the CPU implementations become far too slow after 5MB of data. Now, far too slow is relative to the GPU implementations, but from that point on the CPU is removed from the graph. Beyond 50MB CPU data is no longer collected due to the time ti takes to process the data, the next step being 500MB. We can start to see here that the three variants of AES do have some impact, but not significantly. The main difference between AES128, AES192, and AES256 in the implementation is how many rounds are needed (10, 12, and 14 respectively). If each round is optimized, then the difference between them is never really seen.</p>
+
+<p><img src="img/pchart_gpu_enc.png" alt="" /></p>
+
+<p>In this chart I have zoomed in closer to the GPU data. We can see here even more that the different variations of AES indeed slower, but not by a huge margin. We do see though that the unoptimized implementations perform worse than the optimized.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Algo</th>
+      <th>Duration</th>
+      <th>Relative to AES128</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>AES128</td>
+      <td>111.328</td>
+      <td>1.00</td>
+    </tr>
+    <tr>
+      <td>AES192</td>
+      <td>125.025</td>
+      <td>1.12</td>
+    </tr>
+    <tr>
+      <td>AES256</td>
+      <td>145.177</td>
+      <td>1.30</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>One thing to notice here is that I am only comparing the ECB implementations. One benefit of the CTR mode implementation is that, even unoptimized, it is very fast. Because each CUDA thread only needs to read the counter value from global memory, and every thread does this at the same time, the value is quickly cached and made available to every kernel. Once the counter is incremented and encrypted, it is XOR’d directly into the global memory space. Each thread is written to a separate block in global space, so there are no contentions to worry about. Because of this, even when unoptimized, the CTR mode performs very well. In fact, the optimized version performs worse! I am not sure why this is the case, but I imagine that, with all the operations being done locally in the thread, there are some compiler tricks the NVCC tool is performing that I am unaware of.</p>
+
+<p><img src="img/pchart_ctr.png" alt="" /></p>
+
+<h1 id="summary">Summary</h1>
+<p>Doing this project really introduced me to the useful features of the NSight profiler, as well as how to identify and fix issues performance issues in CUDA code. I did find the profiler lacking compared to some legacy tools, but unfortunately my GPU is not compatible with legacy Nvidia tools. I found out how algorithms can be molded and adapted for parallel execution and what unique challenges need to be solved there. I found that having a deeper knowledge of AES helped greatly, since I was able to find shortcuts in the implementation.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/#projects" class="page__taxonomy-item p-category" rel="tag">Projects</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2019-10-10T00:00:00-05:00">October 10, 2019</time></p>
+
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Parallel+AES%20http%3A%2F%2Flocalhost%3A4000%2Fprojects%2Fparallel-aes-gpu%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fprojects%2Fparallel-aes-gpu%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fprojects%2Fparallel-aes-gpu%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/projects/cuda-pathtracer/" class="pagination--pager" title="CUDA Pathtracer
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h2 class="page__related-title">You May Also Enjoy</h2>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/projects/cuda-pathtracer/" rel="permalink">CUDA Pathtracer
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          13 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">A Pathtracer developed using CUDA, Thrust, and OpenGL libraries. 
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title no_toc" itemprop="headline">
+      
+        <a href="/projects/dronedad/" rel="permalink">DroneDAD
+</a>
+      
+    </h2>
+    
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          4 minute read
+        
+      </span>
+    
+  </p>
+
+
+    <p class="archive__item-excerpt" itemprop="description">An IoT device for aquriring accelerometer data from a drone and reporting the data to a server over WIFI.
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 John Marcao. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
