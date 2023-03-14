@@ -8,14 +8,7 @@ categories:
 
 
 # Parallelizing AES with CUDA
-======================
-
-**University of Pennsylvania, CIS 565: GPU Programming and Architecture, Project 4**
-
-* John Marcao
-  * [LinkedIn](https://www.linkedin.com/in/jmarcao/)
-  * [Personal Website](https://jmarcao.github.io)
-* Tested on: Windows 10, i5-4690K @ 3.50GHz, 8GB DDR3, RTX 2080 TI 3071MB (Personal)
+Tested on: Windows 10, i5-4690K @ 3.50GHz, 8GB DDR3, RTX 2080 TI 3071MB
 
 # Overview
 In this project I implemented AES128, AES192, and AES256 in Electronic Codebook (ECB) and Counter (CTR) modes. ECB and CTR are great candidates for parallelization thanks to predictable or independent IVs. I began by implementing AES on the CPU. I followed examples directly from the AES Algorithm and the [tiny-aes-C](https://github.com/kokke/tiny-AES-c) implementation. After verifying that the algorithms were correct with NIST test vectors, I developed a naive GPU imeplementation. I designed the algorithm to operate on each block in parallel. This implementation was already significantly faster than the CPU. using NSight, I profiled the application to find bottlenecks and places to improve. Iterating over several different versions, I finally settled on an optimized implementation was 92% faster than the naive GPU implementation. I focused on utilizing shared memory, reducing calls to global memory, and changing 8bit operations to 32bit operations and unrolling loops. I also added lookup tables to reduce some repetitive operations.
